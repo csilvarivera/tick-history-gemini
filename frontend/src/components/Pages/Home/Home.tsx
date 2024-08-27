@@ -56,6 +56,5 @@ export function Home({ userEmail }: { userEmail: string }) {
           </div>
         </Container>
       </div>
-    </div>
   );
 }
