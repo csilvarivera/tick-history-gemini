@@ -1,0 +1,358 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-[700];
+}
+
+h1 {
+  @apply text-h1;
+}
+
+h2 {
+  @apply text-h2;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  @apply text-h3;
+}
+
+ul {
+  @apply list-disc;
+  @apply pl-4;
+}
+
+ul.contains-task-list {
+  @apply list-none;
+  @apply pl-0;
+}
+
+ol {
+  @apply list-decimal;
+  @apply pl-6;
+}
+
+a {
+  color: blue;
+  padding: 5px 10px; /* Add some padding */
+  border-radius: 5px; /* Add rounded corners */
+  display: inline-block; /* Allow for inline display */
+  margin: 0 5px; /* Add some margin for spacing */
+  text-decoration: underline;
+}
+
+nav.menu-bar a,  /* Targets links inside a nav with class 'menu-bar' */ 
+.menu-list a      /* Or a ul with class 'menu-list' */
+{
+  color: white;
+  background-color: #ffffff00;
+  padding: 5px 10px; /* Add some padding */
+  border-radius: 5px; /* Add rounded corners */
+  margin: 0 5px; /* Add some margin for spacing */
+  text-decoration: none;
+}
+
+.pdf-chip {
+  color: blue;
+  background-color: #1003a1;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-flex; /* Use inline-flex for better layout */
+  align-items: center;  /* Center items vertically */
+  margin: 0 5px;
+  border: 1px solid #1003a1;
+}
+
+.pdf-icon {
+  width: 16px; /* Adjust as needed */
+  height: 16px; /* Adjust as needed */
+  margin-left: 5px; /* Add a bit of spacing after the text */
+}
+
+blockquote {
+  @apply border-l-4;
+  @apply border-neutral-light-4;
+  @apply pl-4;
+  @apply italic;
+  @apply my-4;
+}
+
+table {
+  @apply w-full;
+  @apply border-collapse;
+  @apply text-left;
+  @apply mb-4;
+}
+
+table tr {
+  @apply border-b;
+  @apply border-neutral-light-4;
+}
+
+table thead tr {
+  @apply border-neutral-dark-4;
+}
+
+table th,
+table td {
+  @apply p-2;
+}
+
+.h-screen-vh {
+  height: calc(95vh - 60px); /* Adjust the value as needed */
+}
+
+.pointer-on-hover {
+  cursor: pointer;
+}
+
+.radius10{
+  border-radius: 10px;
+}
+
+.resizable-pane {
+  flex: 1;
+  overflow: auto;
+  resize: horizontal; /* Allow horizontal resizing */
+}
+
+.resizable-pane:first-child {
+  min-width: 200px; /* Set a minimum width for the first pane */
+}
+
+.resizable-pane::after {
+  content: '';
+  display: block;
+  width: 10px; /* Set the width of the divider */
+  cursor: col-resize; /* Change cursor on hover to indicate resizing */
+}
+
+.divider {
+  width: 3px; /* Set the width of the visual line */
+  background-color: grey; /* Set the color of the visual line */
+  height: 100%; /* Match the height of the parent resizable pane */
+  cursor: col-resize; /* Change cursor on hover to indicate resizing */
+}
+
+.response .text {
+  float: left;
+  width: 50%;
+}
+
+.response .percentage {
+  float: right;
+  width: 50%;
+  text-align: right;
+}
+
+.flex-shrink-0 {
+  max-height: 10%;
+}
+
+.answer-container {
+  background-color: #eff3f9;
+
+  padding: 20px 20px 20px 20px; /* Add some padding */
+  border-radius: 0px; /* Add a slight border radius */
+  display: inline-flex; /* Keep Typerwriter and Dropdown inline */
+  align-items: center; /* Vertically center content */
+  height: auto;  /* Allow height to adjust based on content */
+  transition: height 0.3s ease-in-out; /* Add smooth transition */
+  overflow: hidden; /* Hide SQL when collapsed */
+  flex-direction: column;
+  border-left: 3px solid #4186f5; /* Thin, dark blue border */
+}
+
+.vertex-search-container {
+  background-color: #b1c5fa;
+  padding: 10px; /* Add some padding */
+  border-radius: 20px; /* Add a slight border radius */
+  display: inline-flex; /* Keep Typerwriter and Dropdown inline */
+  align-items: center; /* Vertically center content */
+  height: auto;  /* Allow height to adjust based on content */
+  transition: height 0.3s ease-in-out; /* Add smooth transition */
+  overflow: hidden; /* Hide SQL when collapsed */
+}
+
+.sql-container {
+  background-color: #b1c5fa;
+  padding: 10px; /* Add some padding */
+  border-radius: 20px; /* Add a slight border radius */
+  display: inline-flex; /* Keep Typerwriter and Dropdown inline */
+  align-items: center; /* Vertically center content */
+  height: auto;  /* Allow height to adjust based on content */
+  transition: height 0.3s ease-in-out; /* Add smooth transition */
+  overflow: hidden; /* Hide SQL when collapsed */
+}
+
+/* button text styles */
+.sql-button {
+  font-weight: bold;
+}
+
+.text-white {
+  font-size: 1.2rem; /* Adjust as needed */
+  line-height: 1.2; /* Adjust as needed */
+}
+
+.doc-link-container {
+  display: flex; /* Use flexbox for easy alignment */
+  align-items: center; /* Vertically center the icon and link */
+  margin-bottom: 10px;
+}
+
+/* style={{ width: '90%', maxWidth: '1000px', height: '90%', padding: '20px', background: '#fff', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)' }} */
+
+.upload-container {
+  width: 90%;
+  max-width: 1000px;
+  height: 80%;
+  padding: 20px;
+  background: #fff;
+  border-radius: 15px; /* Slightly rounder corners */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15); /* Softer shadow */
+  display: flex;
+  justify-content: center;
+  flex-direction: row; /* Change to row direction */
+  align-items: center;  /* Vertically center items */
+  gap: 20px; /* Add some space between the thumbnail and the upload elements */
+}
+
+
+.upload-icon {
+  height: 100%;
+  max-height: 150px;
+  width: auto;
+}
+
+.upload-container video {
+  width: 100%;
+  height: 100%; 
+  object-fit: contain;
+}
+
+.progress-bar,
+.file-name {
+  display: none; 
+}
+
+.upload-label {
+  background-color: #648dfd;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.upload-label:hover {
+  background-color: #4e73cf;
+}
+
+.hidden-input {
+  display: none;
+}
+
+.progress-bar {
+  width: 80%;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #648dfd;
+  border-radius: inherit;
+  transition: width 0.3s ease-out;
+}
+
+.video-container {
+  display: flex; 
+  flex-direction: row; 
+  align-items: center; 
+  gap: 8px;
+}
+
+.video-container video {
+  height: 100%;
+  max-height: 150px;
+  width: auto;
+}
+
+.file-name {
+  font-size: 14px;
+  color: #555;
+}
+
+.bottom-logo-wrap {
+  position: absolute;
+  bottom: 1.2rem;
+  display: flex;
+  margin: auto;
+  overflow: hidden;
+  width: 100%;
+}
+
+.bottom-logo-wrap img {
+  width: 30%;
+  max-width: 75px;
+}
+
+.button-start
+{
+  color: white;
+  background-color: #4186f5;
+  margin: 0 0 20px 0;
+  width: 100%;
+}
+
+.button-clear
+{
+  color: white;
+  background-color: #eb4132;
+  width: 100%;
+}
+
+.center-align
+{
+  text-align: center;
+}
+
+.content-wrapper {
+  background-color: white;
+  padding-left: 30px;
+  margin-left: 20px;
+}
+
+.prompt-form {
+  margin-right: 20px;
+}
+
+.loading-container {
+  position: relative;
+}
+
+.loading-spinner {
+  float: left;
+}
+
+.loading-text {
+  display: block;
+  float: left;
+  margin-bottom: 0;
+  margin-top: 10px;
+  color: #4186f6;
+}

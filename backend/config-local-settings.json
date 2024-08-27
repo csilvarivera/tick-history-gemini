@@ -1,0 +1,18 @@
+{
+    "ORCHESTRATOR": "functioncalling",
+    "PROJECT_ID": "csilvariverademo",
+    "DATASET_NAME": "lseg_testing",
+    "REGION": "us-central1",
+    
+    "TH_PROJECT_ID": "dbd-sdlc-prod",
+    "TH_REGION": "US",
+    "TH_DATASET_NAME": "LSE_NORMALISED",
+    "TH_TABLE_NAME": "lse_normalised_mvw",
+
+    "MRN_PROJECT_ID": "dbd-sdlc-dev",
+    "MRN_REGION": "US",
+    "MRN_DATASET_NAME": "MRN_VIEWS",
+    "MRN_TABLE_NAME": "MRN_UNLIMITED"
+
+    
+}

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "os": "^0.1.2",
+    "tempfile": "^5.0.0"
+  }
+}

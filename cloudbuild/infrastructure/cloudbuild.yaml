@@ -1,0 +1,13 @@
+steps:
+    - name: 'hashicorp/terraform:1.8'
+      dir: 'infrastructure/'
+      entrypoint: 'sh'
+      args:
+      - '-c'
+      - |-      
+        # Init and Apply Terraform
+        terraform init -backend-config=bucket=$_TF_STATE_BUCKET_NAME_
+        terraform apply -var gitlab-host-connection-name=$_GITLAB_HOST_CONNECTION_NAME_ -var repo=$_REPO_NAME_ -var domain=$_DOMAIN_ -var enable-domain=$_ENABLE_DOMAIN_ -var enable-iap-on-domain=$_ENABLE_IAP_ON_DOMAIN_ -var frontend-accessors=$_FRONTEND_ACCESSORS_ -var frontend-subdomain-name=$_FRONTEND_SUBDOMAIN_NAME_ -var project=$_PROJECT_ID_ -var region=$_REGION_ -var text2sql-bigquery-project-id=$_TEXT2SQL_BIGQUERY_PROJECT_ID_ -var text2sql-bigquery-dataset-id=$_TEXT2SQL_BIGQUERY_DATASET_ID_ -var text2sql-bigquery-table-sap=$_TEXT2SQL_BIGQUERY_TABLE_SAP_ -var text2sql-bigquery-table-asset-inventory=$_TEXT2SQL_BIGQUERY_TABLE_ASSET_INVENTORY_ -var text2sql-endpoint-project-id=$_TEXT2SQL_ENDPOINT_PROJECT_ID_ -var text2sql-endpoint-id=$_TEXT2SQL_ENDPOINT_ID_ -auto-approve
+options:
+  logging: CLOUD_LOGGING_ONLY
+timeout: 3600s
