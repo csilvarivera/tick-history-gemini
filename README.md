@@ -1,4 +1,5 @@
-# Telcotalk
+# WSY - Gemini
+consider running this repo locally as first instance
 
 ### 1. Infrastructure Deployment
 

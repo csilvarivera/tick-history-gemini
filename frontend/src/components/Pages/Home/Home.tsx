@@ -36,38 +36,9 @@ export function Home({ userEmail }: { userEmail: string }) {
   }, []);
 
   return (
-    <div>
-      <div
-        style={{
-          position: 'fixed',
-          width: '100%',
-          height: '100%',
-          top: 0,
-          left: 0,
-          zIndex: -1,
-        }}
-      >
-        {videoSrc && (
-          <video
-            autoPlay
-            loop
-            muted
-            style={{
-              objectFit: 'cover',
-              width: '100%',
-              height: '100%',
-              opacity: opacity,
-            }}
-            ref={videoRef}
-          >
-            <source src={videoSrc} type="video/mp4" />
-          </video>
-        )}
-      </div>
-      <div style={{ height: '100vh' }}></div>
       <div style={{ height: '100vh' }}>
         <Container className="flex flex-col h-full justify-start items-center py-10 px-10">
-          <h1 className="text text-black text-6xl text-center font-fe-lexend-maxi my-20">Welcome to AMAnda</h1>
+          <h1 className="text text-black text-6xl text-center font-fe-lexend-maxi my-20">Welcome to WSY app</h1>
           <h1 className="text text-black text-3xl text-center font-fe-lexend-maxi">A demonstration prototype from</h1>
           <div className="flex items-center space-x-10 my-20">
             <img style={{ width: '40vw' }} src={'/images/google-cloud-logo-transparent.png'} />
@@ -81,7 +52,7 @@ export function Home({ userEmail }: { userEmail: string }) {
             <FaLongArrowAltDown style={{ fill: '#1003a1' }} size={100} />
           </div>
           <div className="flex items-center space-x-10 my-20">
-            <img style={{ height: '100vh' }} src={'/images/architecture-diagram.png'} />
+            <img style={{ height: '100vh' }} src={'/images/WSY-Gemini-Architecture.png'} />
           </div>
         </Container>
       </div>

@@ -141,15 +141,15 @@ export function Chat({ userEmail, API_ENDPOINT}: { userEmail: string ; API_ENDPO
           <div className="w-1/5 p-8 border-gray-100"  style={{ background: '#f2f2f2', position: 'relative'}}>
             <div className="flex flex-col pb-8">
               <div className="flex justify-center" style={{ margin: '0 0 30px 0'}}>
-                <img src={'/images/lseg.png'}  style={{ width: '85%'}}/>
+                <img src={'/images/wsy-logo.png'}  style={{ width: '85%'}}/>
                 {/* <MdOutlineForum style={{ fill: '#4186f5' }} size={100} /> */}
               </div>
               <div className="mb-10">
-              <h1 className="text-4xl font-bold flex justify-center center-align" style={{ color: '#4d4d4d', margin: '0 0 20px 0' }}>Market Ins(AI)ghts</h1>
+              <h1 className="text-4xl font-bold flex justify-center center-align" style={{ color: '#4d4d4d', margin: '0 0 20px 0' }}>WSY - app</h1>
               </div>
               <h2 className="text-xl font-bold center-align" style={{ color: '#4d4d4d', margin: '0 0 40px 0' }}>Correlate Tick Data, News, Social Media and Macroeconomics</h2>
-              <button onClick={() => setShowModal(true)} className="font-bold font-bold py-2 px-4 rounded button-start">
-                Start Here
+              <button onClick={() => setShowModal(true)} className="font-bold font-bold py-2 px-4  button-start">
+                Start Hererounded
               </button>
               <button onClick={clearChat} className="font-bold py-2 px-4 rounded button-clear">
                 Clear Chat
