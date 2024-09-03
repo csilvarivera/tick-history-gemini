@@ -197,6 +197,94 @@ async def startup_event():
         "required": ["records"],
     },
     )
+
+    get_portfolio_ric = FunctionDeclaration(
+    name="get_portfolio_ric",
+    description="""
+    Simulates a VaR for a given  portfolio of one or more stock symbols (RICS) of a given invesment over historical data. The VaR simulation may also include a holding period.
+    Identify the RICS based on the company names. If you receieve more than one company then separate by comma.
+    The Historical data is a period time can be month, quarter, week or day.
+    The Holding period is expressed in number of days.
+    ALWAYS get confirmation from the user before executing the function showing the collected parameters
+    """,
+    parameters={
+        "type": "object",
+        "properties": {
+            "records": {
+                "type": "array",
+                "description": "A list of RICS ",
+                "items": {
+                    "description": "Data for RIC",
+                    "type": "object",
+                    "properties": {
+                        "ric": {"type": "string", "description": "RICS to get VWAP for separated by comma"},
+                        "investment": {"type": "number", "description": "Total amount of investment"},
+                        "start_date": {"type": "string", "description": "Start Date of the historical, in the format of yyyy-MM-dd, e.g., 2023-05-20"},
+                        "end_date": {"type": "string", "description": "End Date of the historical and has to be before the current date, in the format of yyyy-MM-dd, e.g., 2023-05-21"},
+                        "holding": {"type": "integer", "description": "Holding period to consider for the simulation"},
+                    },
+                    "required": ["ric","start_date","end_date","investment"],
+                },
+            },
+        },
+        "required": ["records"],
+    },
+    )
+
+
+    get_job_list = FunctionDeclaration(
+    name="get_job_list",
+    description="""
+    Provides,shows,displays the list of jobs that are available in the system. 
+    The user may provide a job_id or job_status but this is not necesssary.
+    """,
+    parameters={
+        "type": "object",
+        "properties": {
+            "records": {
+                "type": "array",
+                "description": "A list of jobs ",
+                "items": {
+                    "description": "Data for jobs",
+                    "type": "object",
+                    "properties": {
+                        "job_id": {"type": "string", "description": "The JOB ID to retrieve i.e. job-lrast8oa"},    
+                        "job_status": {"type": "string", "description": "status that can only one of the following SCHEDULED, RUNNING, FAILED, SUCCESS"},
+                    },
+                },
+            },
+        },
+        "required": ["records"],
+    },
+    )
+
+    get_simulation_job = FunctionDeclaration(
+    name="get_simulation_job",
+    description="""
+    Provides, shows, displays the analysis of a job for a previously executed simulation.
+    The job ID will be provided by the user
+    """,
+    parameters={
+        "type": "object",
+        "properties": {
+            "records": {
+                "type": "array",
+                "description": "A list of RICS ",
+                "items": {
+                    "description": "Data for RIC",
+                    "type": "object",
+                    "properties": {
+                        "job_id": {"type": "string", "description": "The JOB ID to retrieve i.e. job-lrast8oa"},    
+                    },
+                    "required": ["job_id"],
+                },
+            },
+        },
+        "required": ["records"],
+    },
+    )
+
+
     # start tools 
     tools = Tool(
         function_declarations=[
@@ -205,6 +293,9 @@ async def startup_event():
             get_msn_ric,
             get_esg_ric,
             get_mes_ric,
+            get_portfolio_ric,
+            get_job_list,
+            get_simulation_job,
         ]
     )
     
@@ -378,11 +469,10 @@ def get_safety_settings():
     }
    return safety_settings
 
-def stream_response(contents, statistics):
+def stream_response(contents, statistics, chart_data=None):
     """ Calls Vertex AI in Streaming mode for model responses. Used to produce reports that requires specific system instructions """
 
     responses = app.state.model.generate_content(contents, stream=True)  
-    # get statistics
     #print ("===========>>>> GETTING VERTEX RESPONSE <<<<<================")
     for response in responses:
         if (response.candidates[0].finish_reason):
@@ -391,11 +481,15 @@ def stream_response(contents, statistics):
         else:
             text_chunk = str(response.text)
             yield text_chunk
+    if(chart_data):
+        yield chart_data
 
-def stream_chat_response(chat,prompt, statistics):
+def stream_chat_response(chat,prompt, statistics,chart_data=None):
     """ Calls Vertex AI in Streamig mode for chat responses. Used when user is having a conversation with the app. """
     responses =chat.send_message(prompt, stream=True)
+    
     for response in responses:
+
         if (response.candidates[0].finish_reason):
             yield statistics
             print (response.candidates[0].finish_reason)
@@ -411,7 +505,9 @@ def stream_chat_response(chat,prompt, statistics):
                 # If the finish reason was SAFETY, the safety ratings have more details.
             print(response.candidates[0].safety_ratings)
             # raise Exception(f"Something went wrong with the API call: {e}")
-            
+    if(chart_data):
+        yield chart_data
+                
 def validate_email_domain(email:str):
     return email.endswith("@google.com") or email.endswith("altostrat.com")
                         
@@ -462,7 +558,10 @@ async def chat_stream(request: Request, email: str ):
         function_name = ""
         # get the variables to query BQ
         i = 0
-        ric, start_date, end_date = getQueryVariables(gemini_response.candidates[0].function_calls[0].args.get("records"))
+        if (gemini_response.candidates[0].function_calls[0].name == "get_simulation_job" or gemini_response.candidates[0].function_calls[0].name =="get_job_list"):
+            print(f"identified a simulation function: {gemini_response.candidates[0].function_calls[0].name} ")
+        else:
+            ric, start_date, end_date = getQueryVariables(gemini_response.candidates[0].function_calls[0].args.get("records"))
         for function_call in gemini_response.candidates[0].function_calls:
             # dict key needs to be hashable
             function_name = function_call.name 
@@ -500,6 +599,20 @@ async def chat_stream(request: Request, email: str ):
                 tasks.append(p)
                 p.start()         
                 i += 1
+            if function_name == "get_portfolio_ric":
+                i =-1
+                print ("in portfolio")
+            if function_name == "get_job_list":
+                p = multiprocessing.Process(target=bqClient.get_job_list_bq, args=(function_name,return_dict,sql_dict,stats_dict))
+                tasks.append(p)
+                p.start()         
+                i =-2
+            if function_name == "get_simulation_job":
+                p = multiprocessing.Process(target=bqClient.get_simulation_job_bq, args=(function_name,return_dict,sql_dict,stats_dict))
+                tasks.append(p)
+                p.start()         
+                i =-3
+                
         # query BQ results in parallel
         for proc in tasks:
             proc.join()     
@@ -522,34 +635,75 @@ async def chat_stream(request: Request, email: str ):
         t2=time.time()
         print(colored(f"***step2***\ntime={'{0:.4f}'.format(t2-t1)}\n", 'magenta'))
         chat.generation_config=GenerationConfig(temperature=0,max_output_tokens=8192,top_p=0.95)
-        
-        # validate that the call will require extensive system instructions
-        if i > 3:
-            # Create an array of content to Gemini so it can generate a model response or request another function call
-            prompt = app.state.prompthelper.build_prompt(input, app.state.prompthelper.get_tasks_exec_summary())
-            contents=[
-                Content(role="user",
-                    parts=[
-                        Part.from_text(prompt),
-                    ]
-            ),
-            # original function calling response
-                gemini_response.candidates[0].content
-            ,
+        # # Create an array of content to Gemini so it can generate a model response or request another function call
+        if (i <- 2):
+            prompt = app.state.prompthelper.build_prompt(input, app.state.prompthelper.get_simulation_tasks())
+        elif (i< -1):
+            prompt = app.state.prompthelper.build_prompt(input, app.state.prompthelper.get_job_list_tasks())
+        contents=[
             Content(role="user",
-                    parts=parts
-            ),
-            ]
-            # get statistics
-            total_tokens, bq_rows =  get_statistics(prompt_tokens, prompt, stats_dict)
-            statistics = app.state.prompthelper.append_statistics("0",total_tokens,bq_rows)
-            return StreamingResponse(stream_response(contents, statistics), media_type='text/event-stream') 
-        else:
-            prompt = app.state.prompthelper.build_prompt(input, app.state.prompthelper.get_tasks_chat())
-             # get statistics
-            total_tokens, bq_rows =  get_statistics(prompt_tokens, prompt, stats_dict)
-            statistics = app.state.prompthelper.append_statistics("0",total_tokens,bq_rows)
-            return StreamingResponse(stream_chat_response(chat,prompt, statistics), media_type='text/event-stream') 
+                parts=[
+                    Part.from_text(prompt),
+                ]
+        ),
+        # original function calling response
+            gemini_response.candidates[0].content
+        ,
+        Content(role="user",
+                parts=parts
+        ),
+        ]
+        # get statistics
+        total_tokens, bq_rows =  get_statistics(prompt_tokens, prompt, stats_dict)
+        statistics = app.state.prompthelper.append_statistics("0",total_tokens,bq_rows)
+        return StreamingResponse(stream_response(contents, statistics,app.state.prompthelper.get_line_chart_data()), media_type='text/event-stream') 
+    
+        # validate that the call will require extensive system instructions
+        # if i > 3:
+        #     # Create an array of content to Gemini so it can generate a model response or request another function call
+        #     prompt = app.state.prompthelper.build_prompt(input, app.state.prompthelper.get_tasks_exec_summary())
+        #     contents=[
+        #         Content(role="user",
+        #             parts=[
+        #                 Part.from_text(prompt),
+        #             ]
+        #     ),
+        #     # original function calling response
+        #         gemini_response.candidates[0].content
+        #     ,
+        #     Content(role="user",
+        #             parts=parts
+        #     ),
+        #     ]
+        #     # get statistics
+        #     total_tokens, bq_rows =  get_statistics(prompt_tokens, prompt, stats_dict)
+        #     statistics = app.state.prompthelper.append_statistics("0",total_tokens,bq_rows)
+        #     return StreamingResponse(stream_response(contents, statistics), media_type='text/event-stream') 
+        # elif i <-2:
+        #     prompt = app.state.prompthelper.build_prompt(input, app.state.prompthelper.get_tasks_chat())
+        #      # get statistics
+        #     total_tokens, bq_rows =  get_statistics(prompt_tokens, prompt, stats_dict)
+        #     statistics = app.state.prompthelper.append_statistics("0",total_tokens,bq_rows)
+        #     return StreamingResponse(stream_chat_response(chat,prompt, statistics), media_type='text/event-stream') 
+        # elif i <-1:
+        #     prompt = app.state.prompthelper.build_prompt(input, app.state.prompthelper.get_job_list_tasks())
+        #      # get statistics
+        #     total_tokens, bq_rows =  get_statistics(prompt_tokens, prompt, stats_dict)
+        #     statistics = app.state.prompthelper.append_statistics("0",total_tokens,bq_rows)
+        #     return StreamingResponse(stream_chat_response(chat,prompt, statistics), media_type='text/event-stream') 
+
+        # elif i <0:
+        #     prompt = app.state.prompthelper.build_prompt(input, app.state.prompthelper.get_portfolio_tasks())
+        #     tokens = app.state.model.count_tokens(prompt_tokens)        
+        #     total_tokens = f"{'{0:,}'.format(int(tokens.total_tokens))}"
+        #     statistics = app.state.prompthelper.append_statistics("0",total_tokens,0)
+        #     return StreamingResponse(stream_chat_response(chat,prompt, statistics), media_type='text/event-stream') 
+        # else:
+        #     prompt = app.state.prompthelper.build_prompt(input, app.state.prompthelper.get_tasks_chat())
+        #      # get statistics
+        #     total_tokens, bq_rows =  get_statistics(prompt_tokens, prompt, stats_dict)
+        #     statistics = app.state.prompthelper.append_statistics("0",total_tokens,bq_rows)
+        #     return StreamingResponse(stream_chat_response(chat,prompt, statistics, app.state.prompthelper.get_line_chart_data()), media_type='text/event-stream') 
     else:
         print(colored('***step2***', 'blue'))
         response = Response(content= gemini_response.candidates[0].content.parts[0].text)

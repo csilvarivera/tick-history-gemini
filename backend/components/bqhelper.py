@@ -43,8 +43,8 @@ class BQHelper(BaseModel):
             -- This is according to the FIX specs, most European trading venues adhere to this
             AND RIGHT(REGEXP_EXTRACT(Qualifiers, r";(.*)\[MMT_CLASS\]"),14) LIKE "12%"
             )
-        SELECT CAST (extract(DATE FROM Date_Time) AS STRING) AS date_time, RIC, ROUND(SAFE_DIVIDE(SUM(Volume*Price),SUM(Volume)),3) AS VWAP,SUM(Volume) AS TotalVolume,AVG(Price) AS Price,
-        COUNT(RIC) AS NumTrades, MAX(Ask_Price) AS AskPrice,MAX(Ask_Size) as AskSize,
+        SELECT CAST (extract(DATE FROM Date_Time) AS STRING) AS date_time, RIC, ROUND(SAFE_DIVIDE(SUM(Volume*Price),SUM(Volume)),3) AS VWAP,SUM(Volume) AS TotalVolume,AVG(Price) AS AvgPrice,
+        COUNT(RIC) AS NumTrades, MAX(Ask_Price) AS MaxAskPrice,MAX(Ask_Size) as MaxAskSize,
          MAX(Bid_Price) AS BidPrice, MAx(Bid_Size) AS BidSize
         FROM AllTrades
         WHERE RIC IN ({5})
@@ -205,10 +205,6 @@ class BQHelper(BaseModel):
         rows = query_job.result()
         pd = rows.to_dataframe()
 
-        # bq_df = bf.read_gbq(query)
-        # # save the dataframe as pandas
-        # pd = bq_df.to_pandas()
-        # save query and return dataframe
         sql_dict[function_name]=query
         stats_dict["mes_rows"] = len(pd.index)
         return_dict[function_name] =  pd.to_json() 
@@ -240,3 +236,58 @@ class BQHelper(BaseModel):
         rows = query_job.result()
         pd = rows.to_dataframe()
         stats_dict["th_rows"] = pd['th_rows'].to_string(index=False)
+
+    def get_simulation_job_bq(self, function_name,return_dict,sql_dict,stats_dict):
+        """Retrieves the Simulation data ."""
+
+        # construct the query
+        query = ("""
+            
+            SELECT return
+            FROM`{0}.{1}.Var-Returns`
+            WHERE
+            batch = 'job-lrast8oa'
+            Limit 1
+                """.format(self.local_settings.PROJECT_ID,self.local_settings.DATASET_NAME))
+        print (f"getting jobs for simulation")
+        
+        bq_client =  bigquery.Client(self.local_settings.PROJECT_ID)
+        query_job =  bq_client.query(query)
+        rows = query_job.result()
+        pd = rows.to_dataframe()
+
+        sql_dict[function_name]=query
+        query = ("""
+            
+            SELECT COUNT(1) AS job_count
+            FROM`{0}.{1}.Var-Returns`
+            WHERE
+            batch = 'job-lrast8oa'
+            Limit 1
+                """.format(self.local_settings.PROJECT_ID,self.local_settings.DATASET_NAME))
+        query_job_count =  bq_client.query(query)
+        job_rows = query_job_count.result()
+        pd_job = job_rows.to_dataframe()
+        stats_dict["job_rows"] = pd_job['job_count'].to_string(index=False)
+        return_dict[function_name] =  pd.to_json() 
+     
+    def get_job_list_bq(self, function_name,return_dict,sql_dict,stats_dict):
+        """Retrieves the jobs for the current date."""
+
+        # construct the query
+        query = ("""
+            
+            SELECT job_id,job_date,job_status
+            FROM`{0}.{1}.Var-Schedule`
+            WHERE JOB_DATE >= CURRENT_DATE
+                """.format(self.local_settings.PROJECT_ID,self.local_settings.DATASET_NAME))
+        print (f"getting jobs list")
+        
+        bq_client =  bigquery.Client(self.local_settings.PROJECT_ID)
+        query_job =  bq_client.query(query)
+        rows = query_job.result()
+        pd = rows.to_dataframe()
+        
+        sql_dict[function_name]=query
+        stats_dict["job_list_rows"] = len(pd.index)
+        return_dict[function_name] =  pd.to_json() 

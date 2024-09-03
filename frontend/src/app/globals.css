@@ -159,7 +159,7 @@ table td {
 }
 
 .answer-container {
-  background-color: #eff3f9;
+  background-color: #e7f3f5;
 
   padding: 20px 20px 20px 20px; /* Add some padding */
   border-radius: 0px; /* Add a slight border radius */
@@ -169,7 +169,7 @@ table td {
   transition: height 0.3s ease-in-out; /* Add smooth transition */
   overflow: hidden; /* Hide SQL when collapsed */
   flex-direction: column;
-  border-left: 3px solid #4186f5; /* Thin, dark blue border */
+  border-left: 3px solid #3ca2b3; /* Thin, dark blue border */
 }
 
 .vertex-search-container {
@@ -185,6 +185,17 @@ table td {
 
 .sql-container {
   background-color: #b1c5fa;
+  padding: 10px; /* Add some padding */
+  border-radius: 20px; /* Add a slight border radius */
+  display: inline-flex; /* Keep Typerwriter and Dropdown inline */
+  align-items: center; /* Vertically center content */
+  height: auto;  /* Allow height to adjust based on content */
+  transition: height 0.3s ease-in-out; /* Add smooth transition */
+  overflow: hidden; /* Hide SQL when collapsed */
+}
+
+.graph-container {
+  background-color: #f4f6f3;
   padding: 10px; /* Add some padding */
   border-radius: 20px; /* Add a slight border radius */
   display: inline-flex; /* Keep Typerwriter and Dropdown inline */
@@ -322,7 +333,7 @@ table td {
 .button-clear
 {
   color: white;
-  background-color: #eb4132;
+  background-color: #7a9456;
   width: 100%;
 }
 
@@ -354,5 +365,5 @@ table td {
   float: left;
   margin-bottom: 0;
   margin-top: 10px;
-  color: #4186f6;
+  color: #3ca2b3;
 }
