@@ -1,6 +1,6 @@
 {
     "ORCHESTRATOR": "functioncalling",
-    "PROJECT_ID": "csilvariverademo",
+    "PROJECT_ID": "<YOUR_PROJECT_ID>",
     "DATASET_NAME": "lseg_testing",
     "REGION": "us-central1",
     
